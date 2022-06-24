@@ -1,7 +1,7 @@
 # TODO: Change the name of the org 
 org: neonagx
-app: serverless-todo-app
-service: serverless-todo-app
+app: serverless-woofer-app
+service: serverless-woofer-app
 
 plugins:
   - serverless-webpack
@@ -22,9 +22,9 @@ provider:
   # Use these variables in the functions and resouorces section below. For example, 
   # ${self:provider.environment.ATTACHMENT_S3_BUCKET}
   environment:
-    TODOS_TABLE: Todos-${self:provider.stage}
-    TODOS_CREATED_AT_INDEX: CreatedAtIndex
-    ATTACHMENT_S3_BUCKET: pbaik-todo-images-${self:provider.stage}
+    WOOFER_TABLE: woofer-${self:provider.stage}
+    WOOFER_CREATED_AT_INDEX: CreatedAtIndex
+    ATTACHMENT_S3_BUCKET: pbaik-woofer-images-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
 
   logs:
@@ -46,21 +46,21 @@ functions:
 
   # TODO: Configure this function - 
   # Provide iamRoleStatements property for performing Actions on DynamoDB
-  GetTodos:
-    handler: src/lambda/http/getTodos.handler
+  GetWoofers:
+    handler: src/lambda/http/getWoofers.handler
     iamRoleStatements:
       - Effect: Allow
         Action:
           - dynamodb:Query
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.WOOFER_TABLE}
       - Effect: Allow
         Action:
           - dynamodb:Query
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}/index/${self:provider.environment.TODOS_CREATED_AT_INDEX}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.WOOFER_TABLE}/index/${self:provider.environment.WOOFER_CREATED_AT_INDEX}
     events:
       - http:
           method: get
-          path: todos
+          path: woofers
           cors: true
           authorizer: Auth
 
@@ -68,55 +68,55 @@ functions:
   # Provide iamRoleStatements property. Decide the Actions and AWS Resource. 
   # To refer to an AWS resource defined in the "Resources" section, you can use "Resource: !GetAtt <resource-name>.Arn"
   # To validate incoming HTTP requests, we have provided the request schemas in function definition below. 
-  CreateTodo:
-    handler: src/lambda/http/createTodo.handler
+  CreateWoofer:
+    handler: src/lambda/http/createWoofer.handler
     iamRoleStatements:
       - Effect: Allow
         Action:
           - dynamodb:PutItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.WOOFER_TABLE}
     events:
       - http:
           method: post
-          path: todos
+          path: woofers
           cors: true
           authorizer: Auth
           request:
             schemas:
-              application/json: ${file(src/models/create-todo.json)}
+              application/json: ${file(src/models/create-woofer.json)}
                   
   # TODO: Configure this function
   # Provide property for setting up CORS, Authorizer, iamRoleStatements, and request schemas
-  UpdateTodo:
-    handler: src/lambda/http/updateTodo.handler
+  UpdateWoofer:
+    handler: src/lambda/http/updateWoofer.handler
     iamRoleStatements: 
       - Effect: Allow
         Action:
           - dynamodb:UpdateItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.WOOFER_TABLE}
     events:
       - http:
           method: patch
-          path: todos/{todoId}
+          path: woofers/{wooferId}
           cors: true
           authorizer: Auth
           request:
             schemas:
-              application/json: ${file(src/models/update-todo.json)}
+              application/json: ${file(src/models/update-woofer.json)}
 
   # TODO: Configure this function
   # Provide property for setting up CORS, Authorizer, iamRoleStatements
-  DeleteTodo:
-    handler: src/lambda/http/deleteTodo.handler
+  DeleteWoofer:
+    handler: src/lambda/http/deleteWoofer.handler
     iamRoleStatements:
       - Effect: Allow
         Action:
           - dynamodb:DeleteItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.WOOFER_TABLE}
     events:
       - http:
           method: delete
-          path: todos/{todoId}
+          path: woofers/{wooferId}
           cors: true
           authorizer: Auth
 
@@ -129,12 +129,12 @@ functions:
         Action:
           - dynamodb:UpdateItem
           - dynamodb:Query
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.WOOFER_TABLE}
       - Effect: Allow
         Action:
           - dynamodb:UpdateItem
           - dynamodb:Query
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}/index/${self:provider.environment.TODOS_CREATED_AT_INDEX}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.WOOFER_TABLE}/index/${self:provider.environment.WOOFER_CREATED_AT_INDEX}
       - Effect: Allow
         Action:
           - s3:PutObject
@@ -143,15 +143,12 @@ functions:
     events:
       - http:
           method: post
-          path: todos/{todoId}/attachment
+          path: woofers/{wooferId}/attachment
           cors: true
           authorizer: Auth
 
 resources:
   Resources:
-    # Add necessary AWS resources. You will need at least the following AWS resources
-    # TODO: Fill the properties
-    # Feel free to change the names as you like. 
     GatewayResponseDefault4XX:
       Type: AWS::ApiGateway::GatewayResponse
       Properties:
@@ -164,28 +161,28 @@ resources:
           Ref: "ApiGatewayRestApi"
     
     # TODO: Create a DynamoDB table with local secondary index and a composite key
-    TodosTable:
+    WoofersTable:
       Type: AWS::DynamoDB::Table
       Properties:
         Properties:
         AttributeDefinitions:
-          - AttributeName: userId
+          - AttributeName: dogId
             AttributeType: S
-          - AttributeName: todoId
+          - AttributeName: wooferId
             AttributeType: S
         KeySchema:
-          - AttributeName: userId
+          - AttributeName: dogId
             KeyType: HASH
-          - AttributeName: todoId
+          - AttributeName: wooferId
             KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
-        TableName: ${self:provider.environment.TODOS_TABLE}
+        TableName: ${self:provider.environment.WOOFER_TABLE}
         LocalSecondaryIndexes:
-          - IndexName: ${self:provider.environment.TODOS_CREATED_AT_INDEX}
+          - IndexName: ${self:provider.environment.WOOFER_CREATED_AT_INDEX}
             KeySchema:
-              - AttributeName: userId
+              - AttributeName: dogId
                 KeyType: HASH
-              - AttributeName: todoId
+              - AttributeName: wooferId
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL

@@ -1,15 +1,10 @@
 import 'source-map-support/register'
 
 import { APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda'
-import { deleteTodo } from '../../businessLogic/todos'
-// import * as middy from 'middy'
-// import { cors, httpErrorHandler } from 'middy/middlewares'
-
-
-// import { getUserId } from '../utils'
+import { deleteWoofer } from '../../businessLogic/WooferBusinessLayer'
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-  const result = await deleteTodo(event);
+  const result = await deleteWoofer(event);
 
   return {
     statusCode: 200,
@@ -20,5 +15,4 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
       result
     })
   };
-  // TODO: Remove a TODO item by id
 }

@@ -1,10 +1,10 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } from 'aws-lambda'
 
-import { getTodosForUser as getTodosForUser } from '../../businessLogic/todos'
+import { getWoofers } from '../../businessLogic/WooferBusinessLayer'
 // TODO: Get all TODO items for a current user
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   // Write your code here
-  const todos = await getTodosForUser(event);
+  const woofers = await getWoofers(event);
 
   return {
     statusCode: 200,
@@ -12,7 +12,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
       'Access-Control-Allow-Origin': '*'
     },
     body: JSON.stringify({
-      items: todos
+      items: woofers
     })
   }
 }

@@ -14,91 +14,91 @@ import {
   Loader
 } from 'semantic-ui-react'
 
-import { createTodo, deleteTodo, getTodos, patchTodo } from '../api/todos-api'
+import { createWoofer, deleteWoofer, getWoofers, patchWoofer } from '../api/woofers-api'
 import Auth from '../auth/Auth'
-import { Todo } from '../types/Todo'
+import { Woofer } from '../types/Woofer'
 
-interface TodosProps {
+interface WoofersProps {
   auth: Auth
   history: History
 }
 
-interface TodosState {
-  todos: Todo[]
-  newTodoName: string
-  loadingTodos: boolean
+interface WoofersState {
+  woofers: Woofer[]
+  newWooferName: string
+  loadingWoofers: boolean
 }
 
-export class Todos extends React.PureComponent<TodosProps, TodosState> {
-  state: TodosState = {
-    todos: [],
-    newTodoName: '',
-    loadingTodos: true
+export class Woofers extends React.PureComponent<WoofersProps, WoofersState> {
+  state: WoofersState = {
+    woofers: [],
+    newWooferName: '',
+    loadingWoofers: true
   }
 
   handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ newTodoName: event.target.value })
+    this.setState({ newWooferName: event.target.value })
   }
 
-  onEditButtonClick = (todoId: string) => {
-    this.props.history.push(`/todos/${todoId}/edit`)
+  onEditButtonClick = (wooferId: string) => {
+    this.props.history.push(`/woofers/${wooferId}/edit`)
   }
 
-  onTodoCreate = async (event: React.ChangeEvent<HTMLButtonElement>) => {
+  onWooferCreate = async (event: React.ChangeEvent<HTMLButtonElement>) => {
     try {
       const dueDate = this.calculateDueDate()
-      const newTodo = await createTodo(this.props.auth.getIdToken(), {
-        name: this.state.newTodoName,
+      const newWoofer = await createWoofer(this.props.auth.getIdToken(), {
+        name: this.state.newWooferName,
         dueDate
       })
       this.setState({
-        todos: [...this.state.todos, newTodo],
-        newTodoName: ''
+        woofers: [...this.state.woofers, newWoofer],
+        newWooferName: ''
       })
     } catch {
-      alert('Todo creation failed')
+      alert('Woofer creation failed')
     }
   }
 
-  onTodoDelete = async (todoId: string) => {
+  onWooferDelete = async (wooferId: string) => {
     try {
-      await deleteTodo(this.props.auth.getIdToken(), todoId)
+      await deleteWoofer(this.props.auth.getIdToken(), wooferId)
       this.setState({
-        todos: this.state.todos.filter(todo => todo.todoId !== todoId)
+        woofers: this.state.woofers.filter(woofer => woofer.wooferId !== wooferId)
       })
     } catch {
-      alert('Todo deletion failed')
+      alert('Woofer deletion failed')
     }
   }
 
-  onTodoCheck = async (pos: number) => {
+  onWooferCheck = async (pos: number) => {
     try {
-      const todo = this.state.todos[pos]
-      await patchTodo(this.props.auth.getIdToken(), todo.todoId, {
-        name: todo.name,
-        dueDate: todo.dueDate,
-        done: !todo.done
+      const woofer = this.state.woofers[pos]
+      await patchWoofer(this.props.auth.getIdToken(), woofer.wooferId, {
+        name: woofer.name,
+        dueDate: woofer.dueDate,
+        done: !woofer.done
       })
       this.setState({
-        todos: update(this.state.todos, {
-          [pos]: { done: { $set: !todo.done } }
+        woofers: update(this.state.woofers, {
+          [pos]: { done: { $set: !woofer.done } }
         })
       })
     } catch {
-      alert('Todo deletion failed')
+      alert('Woofer deletion failed')
     }
   }
 
   async componentDidMount() {
     try {
-      const todos = await getTodos(this.props.auth.getIdToken())
+      const woofers = await getWoofers(this.props.auth.getIdToken())
       this.setState({
-        todos,
-        loadingTodos: false
+        woofers,
+        loadingWoofers: false
       })
     } catch (e) {
       if(e instanceof Error) {
-      alert(`Failed to fetch todos: ${e.message}`);
+      alert(`Failed to fetch Woofers: ${e.message}`);
       }
     }
   }
@@ -106,16 +106,16 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
   render() {
     return (
       <div>
-        <Header as="h1">TODOs</Header>
+        <Header as="h1">Welcome To Woofers</Header>
 
-        {this.renderCreateTodoInput()}
+        {this.renderCreateWooferInput()}
 
-        {this.renderTodos()}
+        {this.renderWoofers()}
       </div>
     )
   }
 
-  renderCreateTodoInput() {
+  renderCreateWooferInput() {
     return (
       <Grid.Row>
         <Grid.Column width={16}>
@@ -124,12 +124,12 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
               color: 'teal',
               labelPosition: 'left',
               icon: 'add',
-              content: 'New task',
-              onClick: this.onTodoCreate
+              content: 'New Woofer',
+              onClick: this.onWooferCreate
             }}
             fluid
             actionPosition="left"
-            placeholder="To change the world..."
+            placeholder="To change the doggo world..."
             onChange={this.handleNameChange}
           />
         </Grid.Column>
@@ -140,47 +140,47 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
     )
   }
 
-  renderTodos() {
-    if (this.state.loadingTodos) {
+  renderWoofers() {
+    if (this.state.loadingWoofers) {
       return this.renderLoading()
     }
 
-    return this.renderTodosList()
+    return this.renderWoofersList()
   }
 
   renderLoading() {
     return (
       <Grid.Row>
         <Loader indeterminate active inline="centered">
-          Loading TODOs
+          Loading Woofers
         </Loader>
       </Grid.Row>
     )
   }
 
-  renderTodosList() {
+  renderWoofersList() {
     return (
       <Grid padded>
-        {this.state.todos.map((todo, pos) => {
+        {this.state.woofers.map((woofer, pos) => {
           return (
-            <Grid.Row key={todo.todoId}>
+            <Grid.Row key={woofer.wooferId}>
               <Grid.Column width={1} verticalAlign="middle">
                 <Checkbox
-                  onChange={() => this.onTodoCheck(pos)}
-                  checked={todo.done}
+                  onChange={() => this.onWooferCheck(pos)}
+                  checked={woofer.done}
                 />
               </Grid.Column>
               <Grid.Column width={10} verticalAlign="middle">
-                {todo.name}
+                {woofer.name}
               </Grid.Column>
               <Grid.Column width={3} floated="right">
-                {todo.dueDate}
+                {woofer.dueDate}
               </Grid.Column>
               <Grid.Column width={1} floated="right">
                 <Button
                   icon
                   color="blue"
-                  onClick={() => this.onEditButtonClick(todo.todoId)}
+                  onClick={() => this.onEditButtonClick(woofer.wooferId)}
                 >
                   <Icon name="pencil" />
                 </Button>
@@ -189,13 +189,13 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
                 <Button
                   icon
                   color="red"
-                  onClick={() => this.onTodoDelete(todo.todoId)}
+                  onClick={() => this.onWooferDelete(woofer.wooferId)}
                 >
                   <Icon name="delete" />
                 </Button>
               </Grid.Column>
-              {todo.attachmentUrl && (
-                <Image src={todo.attachmentUrl} size="small" wrapped />
+              {woofer.attachmentUrl && (
+                <Image src={woofer.attachmentUrl} size="small" wrapped />
               )}
               <Grid.Column width={16}>
                 <Divider />
