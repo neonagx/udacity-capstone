@@ -1,15 +1,10 @@
 import 'source-map-support/register'
 
 import { APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda'
-// import * as middy from 'middy'
-// import { cors, httpErrorHandler } from 'middy/middlewares'
-
-import { generateUploadUrl } from '../../businessLogic/WooferBusinessLayer'
-// import { getUserId } from '../utils'
+import { deleteWoofer } from '../../businessLogic/WooferBusinessLayer'
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-  const url = await generateUploadUrl(event);
-    // TODO: Return a presigned URL to upload a file for a TODO item with the provided id
+  const result = await deleteWoofer(event);
 
   return {
     statusCode: 200,
@@ -17,7 +12,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
       'Access-Control-Allow-Origin': '*'
     },
     body: JSON.stringify({
-      uploadUrl: url
+      result
     })
-  }
+  };
 }

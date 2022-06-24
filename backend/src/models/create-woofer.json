@@ -1,0 +1,35 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "createWoofer",
+    "type": "object",
+    "properties": {
+        "dogId": {
+            "type": "string"
+        },
+        "wooferId": {
+            "type": "string"
+        },
+        "createdAt": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 200
+        },
+        "dueDate": {
+            "type": "string"
+        },
+        "done": {
+            "type": "boolean"
+        },
+        "attachmentUrl": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "name",
+        "dueDate"
+    ],
+    "additionalProperties": false
+}
