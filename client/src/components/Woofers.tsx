@@ -17,6 +17,7 @@ import {
 import { createWoofer, deleteWoofer, getWoofers, patchWoofer } from '../api/woofers-api'
 import Auth from '../auth/Auth'
 import { Woofer } from '../types/Woofer'
+import doggo from '../../src/asset/doggo.png';
 
 interface WoofersProps {
   auth: Auth
@@ -106,6 +107,7 @@ export class Woofers extends React.PureComponent<WoofersProps, WoofersState> {
   render() {
     return (
       <div>
+        <img src={doggo}/>
         <Header as="h1">Welcome To Woofers</Header>
 
         {this.renderCreateWooferInput()}
